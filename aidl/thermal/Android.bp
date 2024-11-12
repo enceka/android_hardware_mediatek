@@ -1,73 +1,66 @@
-cc_binary {
-    name: "android.hardware.thermal-service.mediatek",
-    srcs: [
-        "service.cpp",
-        "Thermal.cpp",
-        "thermal-helper.cpp",
-        "utils/thermal_throttling.cpp",
-        "utils/thermal_info.cpp",
-        "utils/thermal_files.cpp",
-        "utils/power_files.cpp",
-        "utils/powerhal_helper.cpp",
-        "utils/thermal_stats_helper.cpp",
-        "utils/thermal_watcher.cpp",
-        "virtualtemp_estimator/virtualtemp_estimator.cpp",
-    ],
+//
+// Copyright (C) 2018 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+cc_library_shared {
+    name: "android.hardware.thermal@2.0-impl-mtk",
+    defaults: ["hidl_defaults"],
     vendor: true,
     relative_install_path: "hw",
-    vintf_fragments: [
-        "android.hardware.thermal-service.mediatek.xml",
-    ],
-    init_rc: [
-        "android.hardware.thermal-service.mediatek.rc",
-    ],
-    required: [
-        "thermal_symlinks_mediatek",
+    srcs: ["Thermal.cpp",
+    		"thermal_watcher.cpp",
+    		"thermal_helper.cpp",
     ],
     shared_libs: [
+        "libc",
+        "liblog",
+        "libcutils",
+        "libhardware",
         "libbase",
         "libcutils",
-        "libjsoncpp",
         "libutils",
-        "libnl",
-        "libbinder_ndk",
-        "android.frameworks.stats-V2-ndk",
-        "android.hardware.power-V1-ndk",
-        "android.hardware.thermal-V2-ndk",
-        "pixel-power-ext-V1-ndk",
-        "pixelatoms-cpp",
-    ],
-    static_libs: [
-        "libpixelstats",
-    ],
-    export_shared_lib_headers: [
-        "android.frameworks.stats-V2-ndk",
-        "pixelatoms-cpp",
-    ],
-    cflags: [
-        "-Wall",
-        "-Werror",
-        "-Wextra",
-        "-Wunused",
-    ],
-    tidy: true,
-    tidy_checks: [
-        "android-*",
-        "cert-*",
-        "clang-analyzer-security*",
-    ],
-    tidy_checks_as_errors: [
-        "android-*",
-        "clang-analyzer-security*",
-        "cert-*",
+        "libhidlbase",
+        "android.hardware.thermal@1.0",
+        "android.hardware.thermal@2.0",
     ],
 }
 
-sh_binary {
-    name: "thermal_symlinks_mediatek",
-    src: "init.thermal.symlinks.sh",
+cc_binary {
+    name: "android.hardware.thermal@2.0-service.mtk",
+    defaults: ["hidl_defaults"],
+    relative_install_path: "hw",
     vendor: true,
-    init_rc: [
-        "mediatek-thermal-symlinks.rc",
+    init_rc: ["android.hardware.thermal@2.0-service.mtk.rc"],
+    vintf_fragments: ["android.hardware.thermal@2.0-service.mtk.xml"],
+    required: [
+        "android.hardware.thermal@2.0-impl-mtk",
+    ],
+    srcs: [
+        "service.cpp"
+    ],
+    shared_libs: [
+        "libc",
+        "liblog",
+        "libcutils",
+        "libhardware",
+        "libcutils",
+        "libbase",
+        "libhidlbase",
+        "libutils",
+        "android.hardware.thermal@2.0",
+        "android.hardware.thermal@1.0",
     ],
 }
+
+
